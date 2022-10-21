@@ -1,32 +1,27 @@
 package ru.netology.delivery;
 
 import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Configuration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
-import ru.netology.delivery.DataGenerator;
 
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
-import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
-import static com.codeborne.selenide.Selenide.$;
 
 class ChangeDateTest {
 
 
     @BeforeEach
     void setup() {
+        Configuration.holdBrowserOpen = true;
         open("http://localhost:9999");
     }
 
     @Test
-
     @DisplayName("Should successful plan and replan meeting")
-
     void shouldSuccessfulPlanAndReplanMeeting() {
         var validUser = DataGenerator.Registration.generateUser("ru");
         var daysToAddForFirstMeeting = 4;
@@ -40,14 +35,12 @@ class ChangeDateTest {
         $("[data-test-id=phone] input").setValue(validUser.getPhone());
         $("[data-test-id='agreement']").click();
         $(".button__content").click();
-        $("[data-test-id='success-notification'].notification__content").shouldHave(exactText("Встреча" +
-                " успешно запланирована на " + firstMeetingDate));
+        $x("//*[text()=\"Встреча успешно забронирована на \"]").shouldHave(Condition.text("Встреча успешно забронирована на " + firstMeetingDate), Duration.ofSeconds(15));
         $("[data-test-id='date'] input").sendKeys(Keys.CONTROL + "a", Keys.BACK_SPACE);
         $("[data-test-id=date] input").setValue(secondMeetingDate);
         $(".button__content").click();
-        $("[data-test-id=replan-notification].icon-button__content").click();
-        $("[data-test-id=success-notification].notification__content").shouldHave(exactText("Встреча" +
-                " успешно запланирована на " + secondMeetingDate));
+        $x("//*[text()=\"Встреча успешно забронирована на \"]").shouldHave(Condition.text("Встреча успешно забронирована на " + secondMeetingDate), Duration.ofSeconds(15));
+
     }
 
 }
